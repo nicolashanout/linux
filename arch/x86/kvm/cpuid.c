@@ -1138,7 +1138,15 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 
 	eax = kvm_rax_read(vcpu);
 	ecx = kvm_rcx_read(vcpu);
-	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
+    // CMPE283 CODE CHANGE START
+    if(eax == 0x4FFFFFFF)
+    {
+        printk(KERN_INFO "ENTERED LEAF FUNCTION 0x%x \n");
+    } else
+    {
+        kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
+    }
+    // CMPE283 CODE CHANGE END
 	kvm_rax_write(vcpu, eax);
 	kvm_rbx_write(vcpu, ebx);
 	kvm_rcx_write(vcpu, ecx);

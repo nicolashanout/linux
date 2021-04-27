@@ -1130,8 +1130,10 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
 EXPORT_SYMBOL_GPL(kvm_cpuid);
 
 // CMPE283 CODE CHANGE START
-atomic64_t cmpe283_exit_counter = ATOMIC64_INIT(0);
+atomic_t cmpe283_exit_counter = ATOMIC_INIT(0);
+atomic64_t cmpe283_total_cycles = ATOMIC64_INIT(0);
 EXPORT_SYMBOL(cmpe283_exit_counter);
+EXPORT_SYMBOL(cmpe283_total_cycles);
 // CMPE283 CODE CHANGE END
 
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
@@ -1146,7 +1148,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
     // CMPE283 CODE CHANGE START
     if(eax == 0x4FFFFFFF)
     {
-        printk(KERN_INFO "number of exits: %lld \n", atomic64_read(&cmpe283_exit_counter));
+        printk(KERN_INFO "number of exits: %d, total cycles: %lld \n", atomic_read(&cmpe283_exit_counter), atomic64_read(&cmpe283_total_cycles));
     } else
     {
         kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);

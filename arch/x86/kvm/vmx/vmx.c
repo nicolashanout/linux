@@ -63,6 +63,7 @@
 #include "vmx.h"
 #include "x86.h"
 
+
 MODULE_AUTHOR("Qumranet");
 MODULE_LICENSE("GPL");
 
@@ -6104,13 +6105,16 @@ unexpected_vmexit:
 
 
 // CMPE283 CODE CHANGE START
-extern atomic64_t cmpe283_exit_counter;
+extern atomic_t cmpe283_exit_counter;
+extern atomic64_t cmpe283_total_cycles;
 
 static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 {
     int ret;
+    u64 start, end;
     // TODO get cycles
-    atomic64_inc(&cmpe283_exit_counter);
+    start = rdtsc();
+    atomic_inc(&cmpe283_exit_counter);
 	ret = __vmx_handle_exit(vcpu, exit_fastpath);
 
 	/*
@@ -6120,6 +6124,8 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 	 */
 
     // TODO get cycles and increment total cycles with the delta
+    end = rdtsc();
+    atomic64_fetch_add(end-start, &cmpe283_total_cycles);
 
 	if (to_vmx(vcpu)->exit_reason.bus_lock_detected) {
 		if (ret > 0)

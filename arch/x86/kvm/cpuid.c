@@ -1129,6 +1129,11 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
 }
 EXPORT_SYMBOL_GPL(kvm_cpuid);
 
+// CMPE283 CODE CHANGE START
+atomic64_t cmpe283_exit_counter = ATOMIC64_INIT(0);
+EXPORT_SYMBOL(cmpe283_exit_counter);
+// CMPE283 CODE CHANGE END
+
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
@@ -1141,7 +1146,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
     // CMPE283 CODE CHANGE START
     if(eax == 0x4FFFFFFF)
     {
-        printk(KERN_INFO "ENTERED LEAF FUNCTION 0x%x \n");
+        printk(KERN_INFO "number of exits: %lld \n", atomic64_read(&cmpe283_exit_counter));
     } else
     {
         kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);

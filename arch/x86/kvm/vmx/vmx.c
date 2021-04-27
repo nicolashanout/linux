@@ -6102,15 +6102,25 @@ unexpected_vmexit:
 	return 0;
 }
 
+
+// CMPE283 CODE CHANGE START
+extern atomic64_t cmpe283_exit_counter;
+
 static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 {
-	int ret = __vmx_handle_exit(vcpu, exit_fastpath);
+    int ret;
+    // TODO get cycles
+    atomic64_inc(&cmpe283_exit_counter);
+	ret = __vmx_handle_exit(vcpu, exit_fastpath);
 
 	/*
 	 * Even when current exit reason is handled by KVM internally, we
 	 * still need to exit to user space when bus lock detected to inform
 	 * that there is a bus lock in guest.
 	 */
+
+    // TODO get cycles and increment total cycles with the delta
+
 	if (to_vmx(vcpu)->exit_reason.bus_lock_detected) {
 		if (ret > 0)
 			vcpu->run->exit_reason = KVM_EXIT_X86_BUS_LOCK;
@@ -6120,6 +6130,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 	}
 	return ret;
 }
+// CMPE283 CODE CHANGE END
 
 /*
  * Software based L1D cache flush which is used when microcode providing

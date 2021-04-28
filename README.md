@@ -5,9 +5,13 @@
 **Heng Jerry Quan** <br>
 - Researched and implemented exporting and loading global variables
 - Researched and implemented methods to load eax in C, ended up using __asm__()
+
+
 **Nicolas Hanout** <br>
 - Researched and implemented atomic variables and associated functions
 - Researched, implemented, and verified u64 to int32 conversion
+
+
 ## Steps
 
 ## Questions

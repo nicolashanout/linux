@@ -14,6 +14,26 @@
 
 ## Steps
 
+1. On OpenSUSE tumbleweed kernel version: 5.11.15
+2. on github fork repo: `https://github.com/torvalds/linux`
+3. clone to vm.
+4. in local repo copy `cp /boot/config-5.11.15-1-default .config`
+5. `sudo zypper in gcc flex bison`
+6. `make oldconfig` and accept all defaults
+7. using the yast software managment tool, open the patterns tab and install the kernel development software
+8. `sudo zypper in dwarves`
+9. `make -j $(nproc) modules && make -j $(nproc) && sudo make -j $(nproc) modules_install && sudo make -j $(nproc) install`
+10. `sudo reboot` then using `uname -a` should show you the new version of the kernel
+11. modify code:
+  - in 'arch/x86/kvm/cpuid.c' modify the `kvm_emulate_cpuid` function by creating a new leaf function for eax value `0x4FFFFFFF`, and declare atomic 32-bit and 64-bit integers for the number of exits and cycles and export them.
+  - in 'arch/x86/kvm/vmx/vmx.c' declare the previous external variable and increment them in `vmx_handle_exit` function.
+  - in 'arch/x86/kvm/cpuid.c' when the leaf function `0x4FFFFFFF` is called place the apropriate values into `eax`, `ebx`, and `ecx`.
+12. repeat step 9 and reboot again
+13. using `YaST`>`Virtualization`>`Install Hypervisor and Tools`,  instal kvm server and manager.
+14. create a vm and install a guest OS (we used Ubuntu 20.04.02 LTS)
+15. from inside the vm call execute a program that calls cpuid and the number of total exits will be stored in `eax` while the high-32 and low-32 bits of the total number of clock cycles spent handleing exits will be stored in `ebx` and `ecx` respectivly  
+sample output: `CPUID(0x4FFFFFFF), exits=583999, cycles spent in exit=13436425563`
+
 ## Questions
 
 **Comment on the frequency of exits – does the number of exits increase at a stable rate? Or are there more exits performed during certain VM operations? Approximately how many exits does a full VM boot entail?**

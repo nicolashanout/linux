@@ -1139,6 +1139,7 @@ EXPORT_SYMBOL(cmpe283_total_cycles);
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
+    u64 total_cycles;
 
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
@@ -1148,7 +1149,11 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
     // CMPE283 CODE CHANGE START
     if(eax == 0x4FFFFFFF)
     {
-        printk(KERN_INFO "number of exits: %d, total cycles: %lld \n", atomic_read(&cmpe283_exit_counter), atomic64_read(&cmpe283_total_cycles));
+        eax = (u32)atomic_read(&cmpe283_exit_counter);
+        total_cycles = (u64)atomic64_read(&cmpe283_total_cycles);
+        ebx = (u32)((total_cycles & 0xFFFFFFFF00000000LL) >> 32);
+        ecx = (u32)(total_cycles & 0xFFFFFFFFLL);
+        printk(KERN_INFO "number of exits: %u, total cycles: %llu, ebx: %u, ecx: %u \n", eax, total_cycles, ebx, ecx);
     } else
     {
         kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);

@@ -1153,7 +1153,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
         total_cycles = (u64)atomic64_read(&cmpe283_total_cycles);
         ebx = (u32)((total_cycles & 0xFFFFFFFF00000000LL) >> 32);
         ecx = (u32)(total_cycles & 0xFFFFFFFFLL);
-        printk(KERN_INFO "number of exits: %u, total cycles: %llu, ebx: %u, ecx: %u \n", eax, total_cycles, ebx, ecx);
+        printk(KERN_INFO "CPUID(0x%x), exits=%u, cycles spent in exit: %llu\n", kvm_rax_read(vcpu), eax, total_cycles);
     } else
     {
         kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);

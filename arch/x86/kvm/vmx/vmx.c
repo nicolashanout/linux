@@ -6112,7 +6112,6 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 {
     int ret;
     u64 start, end;
-    // TODO get cycles
     start = rdtsc();
     atomic_inc(&cmpe283_exit_counter);
 	ret = __vmx_handle_exit(vcpu, exit_fastpath);
@@ -6122,8 +6121,6 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 	 * still need to exit to user space when bus lock detected to inform
 	 * that there is a bus lock in guest.
 	 */
-
-    // TODO get cycles and increment total cycles with the delta
     end = rdtsc();
     atomic64_fetch_add(end-start, &cmpe283_total_cycles);
 

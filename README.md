@@ -27,7 +27,7 @@
 11. modify code:
   - in 'arch/x86/kvm/cpuid.c' modify the `kvm_emulate_cpuid` function by creating a new leaf function for eax value `0x4FFFFFFF`, and declare atomic 32-bit and 64-bit integers for the number of exits and cycles and export them.
   - in 'arch/x86/kvm/vmx/vmx.c' declare the previous external variable and increment them in `vmx_handle_exit` function.
-  - in 'arch/x86/kvm/cpuid.c' when the leaf function `0x4FFFFFFF` is called place the apropriate values into `eax`, `ebx`, and `ecx`.
+  - in 'arch/x86/kvm/cpuid.c' when the leaf function `0x4FFFFFFF` is called place the appropriate values into `eax`, `ebx`, and `ecx`.
 12. repeat step 9 and reboot again
 13. using `YaST`>`Virtualization`>`Install Hypervisor and Tools`,  instal kvm server and manager.
 14. create a vm and install a guest OS (we used Ubuntu 20.04.02 LTS)

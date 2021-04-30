@@ -24,7 +24,7 @@
 8. `sudo zypper in dwarves`
 9. `make -j $(nproc) modules && make -j $(nproc) && sudo make -j $(nproc) modules_install && sudo make -j $(nproc) install`
 10. `sudo reboot` then using `uname -a` should show you the new version of the kernel
-11. modify code:
+11. in the repo, modify code:
   - in 'arch/x86/kvm/cpuid.c' modify the `kvm_emulate_cpuid` function by creating a new leaf function for eax value `0x4FFFFFFF`, and declare atomic 32-bit and 64-bit integers for the number of exits and cycles and export them.
   - in 'arch/x86/kvm/vmx/vmx.c' declare the previous external variable and increment them in `vmx_handle_exit` function.
   - in 'arch/x86/kvm/cpuid.c' when the leaf function `0x4FFFFFFF` is called place the appropriate values into `eax`, `ebx`, and `ecx`.

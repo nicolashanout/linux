@@ -42,7 +42,12 @@
       EXPORT_SYMBOL(cmpe283_exit_counter);
       EXPORT_SYMBOL(cmpe283_total_cycles);
       ```
-  - in `arch/x86/kvm/vmx/vmx.c` declare the previous external variable and increment them in `vmx_handle_exit` function.
+  - in `arch/x86/kvm/vmx/vmx.c` declare the previous external variable
+    ``` c
+    extern atomic_t cmpe283_exit_counter;
+    extern atomic64_t cmpe283_total_cycles;
+    ```
+    and increment them in `vmx_handle_exit` function.
     ``` c
       u64 start, end;
       start = rdtsc();

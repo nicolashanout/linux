@@ -25,9 +25,41 @@
 9. `make -j $(nproc) modules && make -j $(nproc) && sudo make -j $(nproc) modules_install && sudo make -j $(nproc) install`
 10. `sudo reboot` then using `uname -a` should show you the new version of the kernel
 11. in the repo, modify code:
-  - in 'arch/x86/kvm/cpuid.c' modify the `kvm_emulate_cpuid` function by creating a new leaf function for eax value `0x4FFFFFFF`, and declare atomic 32-bit and 64-bit integers for the number of exits and cycles and export them.
-  - in 'arch/x86/kvm/vmx/vmx.c' declare the previous external variable and increment them in `vmx_handle_exit` function.
-  - in 'arch/x86/kvm/cpuid.c' when the leaf function `0x4FFFFFFF` is called place the appropriate values into `eax`, `ebx`, and `ecx`.
+  - in `arch/x86/kvm/cpuid.c` modify the `kvm_emulate_cpuid` function by creating a new leaf function for eax value `0x4FFFFFFF`,
+     ``` c 
+     if(eax == 0x4FFFFFFF)
+        {
+           // set eax, ebx and ecx to the
+        } else
+        {
+          // original behaviour
+        }
+      ```
+    and declare atomic 32-bit and 64-bit integers for the number of exits and cycles and export them.
+      ``` c
+      atomic_t cmpe283_exit_counter = ATOMIC_INIT(0);
+      atomic64_t cmpe283_total_cycles = ATOMIC64_INIT(0);
+      EXPORT_SYMBOL(cmpe283_exit_counter);
+      EXPORT_SYMBOL(cmpe283_total_cycles);
+      ```
+  - in `arch/x86/kvm/vmx/vmx.c` declare the previous external variable and increment them in `vmx_handle_exit` function.
+    ``` c
+      u64 start, end;
+      start = rdtsc();
+      atomic_inc(&cmpe283_exit_counter);
+      //
+      // Handle exit
+      //
+      end = rdtsc();
+      atomic64_fetch_add(end-start, &cmpe283_total_cycles);
+    ```
+  - in `arch/x86/kvm/cpuid.c` when the leaf function `0x4FFFFFFF` is called place the appropriate values into `eax`, `ebx`, and `ecx`.
+    ``` c
+          eax = (u32)atomic_read(&cmpe283_exit_counter);
+          total_cycles = (u64)atomic64_read(&cmpe283_total_cycles);
+          ebx = (u32)((total_cycles & 0xFFFFFFFF00000000LL) >> 32);
+          ecx = (u32)(total_cycles & 0xFFFFFFFFLL);
+    ```
 12. repeat step 9 and reboot again
 13. using `YaST`>`Virtualization`>`Install Hypervisor and Tools`,  instal kvm server and manager.
 14. create a vm and install a guest OS (we used Ubuntu 20.04.02 LTS)

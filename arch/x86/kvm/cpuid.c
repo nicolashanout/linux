@@ -1134,6 +1134,111 @@ atomic_t cmpe283_exit_counter = ATOMIC_INIT(0);
 atomic64_t cmpe283_total_cycles = ATOMIC64_INIT(0);
 EXPORT_SYMBOL(cmpe283_exit_counter);
 EXPORT_SYMBOL(cmpe283_total_cycles);
+
+
+// Assignmetn 3 Mod Start
+
+// u8 ENABLED_EXITS_MAP[69] =  {
+//  	[EXIT_REASON_EXCEPTION_NMI]           = handle_exception_nmi,
+// 	[EXIT_REASON_EXTERNAL_INTERRUPT]      = handle_external_interrupt,
+// 	[EXIT_REASON_TRIPLE_FAULT]            = handle_triple_fault,
+// 	[EXIT_REASON_NMI_WINDOW]	      = handle_nmi_window,
+// 	[EXIT_REASON_IO_INSTRUCTION]          = handle_io,
+// 	[EXIT_REASON_CR_ACCESS]               = handle_cr,
+// 	[EXIT_REASON_DR_ACCESS]               = handle_dr,
+// 	[EXIT_REASON_CPUID]                   = kvm_emulate_cpuid,
+// 	[EXIT_REASON_MSR_READ]                = kvm_emulate_rdmsr,
+// 	[EXIT_REASON_MSR_WRITE]               = kvm_emulate_wrmsr,
+// 	[EXIT_REASON_INTERRUPT_WINDOW]        = handle_interrupt_window,
+// 	[EXIT_REASON_HLT]                     = kvm_emulate_halt,
+// 	[EXIT_REASON_INVD]		      = handle_invd,
+// 	[EXIT_REASON_INVLPG]		      = handle_invlpg,
+// 	[EXIT_REASON_RDPMC]                   = handle_rdpmc,
+// 	[EXIT_REASON_VMCALL]                  = handle_vmcall,
+// 	[EXIT_REASON_VMCLEAR]		      = handle_vmx_instruction,
+// 	[EXIT_REASON_VMLAUNCH]		      = handle_vmx_instruction,
+// 	[EXIT_REASON_VMPTRLD]		      = handle_vmx_instruction,
+// 	[EXIT_REASON_VMPTRST]		      = handle_vmx_instruction,
+// 	[EXIT_REASON_VMREAD]		      = handle_vmx_instruction,
+// 	[EXIT_REASON_VMRESUME]		      = handle_vmx_instruction,
+// 	[EXIT_REASON_VMWRITE]		      = handle_vmx_instruction,
+// 	[EXIT_REASON_VMOFF]		      = handle_vmx_instruction,
+// 	[EXIT_REASON_VMON]		      = handle_vmx_instruction,
+// 	[EXIT_REASON_TPR_BELOW_THRESHOLD]     = handle_tpr_below_threshold,
+// 	[EXIT_REASON_APIC_ACCESS]             = handle_apic_access,
+// 	[EXIT_REASON_APIC_WRITE]              = handle_apic_write,
+// 	[EXIT_REASON_EOI_INDUCED]             = handle_apic_eoi_induced,
+// 	[EXIT_REASON_WBINVD]                  = handle_wbinvd,
+// 	[EXIT_REASON_XSETBV]                  = handle_xsetbv,
+// 	[EXIT_REASON_TASK_SWITCH]             = handle_task_switch,
+// 	[EXIT_REASON_MCE_DURING_VMENTRY]      = handle_machine_check, ??????????????
+// 	[EXIT_REASON_GDTR_IDTR]		      = handle_desc,
+// 	[EXIT_REASON_LDTR_TR]		      = handle_desc,
+// 	[EXIT_REASON_EPT_VIOLATION]	      = handle_ept_violation,
+// 	[EXIT_REASON_EPT_MISCONFIG]           = handle_ept_misconfig,
+// 	[EXIT_REASON_PAUSE_INSTRUCTION]       = handle_pause,
+// 	[EXIT_REASON_MWAIT_INSTRUCTION]	      = handle_mwait,
+// 	[EXIT_REASON_MONITOR_TRAP_FLAG]       = handle_monitor_trap,
+// 	[EXIT_REASON_MONITOR_INSTRUCTION]     = handle_monitor,
+// 	[EXIT_REASON_INVEPT]                  = handle_vmx_instruction,
+// 	[EXIT_REASON_INVVPID]                 = handle_vmx_instruction,
+// 	[EXIT_REASON_RDRAND]                  = handle_invalid_op,
+// 	[EXIT_REASON_RDSEED]                  = handle_invalid_op,
+// 	[EXIT_REASON_PML_FULL]		      = handle_pml_full,
+// 	[EXIT_REASON_INVPCID]                 = handle_invpcid,
+// 	[EXIT_REASON_VMFUNC]		      = handle_vmx_instruction,
+// 	[EXIT_REASON_PREEMPTION_TIMER]	      = handle_preemption_timer,
+// 	[EXIT_REASON_ENCLS]		      = handle_encls,
+// 	[EXIT_REASON_BUS_LOCK]                = handle_bus_lock_vmexit,   ??????
+// }
+
+
+// __uint128 cmpe283_ass3_enabled_exits = 0x1C3DE7FFF1BBFDFu;
+// cmpe283_ass3_enabled_exits = (cmpe283_ass3_enabled_exits << 12) & FC0u;
+
+bool cmpe283_ass3_enabled_exits[69] = {
+    1,1,1,0,0,0,0,1,1,1,
+    1,0,1,1,1,1,0,0,1,1,
+    1,1,1,1,1,1,1,1,1,1,
+    1,1,1,0,0,0,1,1,0,1,
+    1,1,0,1,1,1,1,1,1,1,
+    1,0,1,1,1,1,1,1,1,1,
+    1,1,1,0,0,0,0,0,0
+};
+
+atomic_t cmpe283_ass3_exit_counters[69] = {
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0),
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0),
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0),
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0),
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0),
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0),
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0),
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0),
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0),
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0),
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0),
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0),
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0),
+    ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0), ATOMIC_INIT(0)
+};
+
+EXPORT_SYMBOL(cmpe283_ass3_exit_counters);
+
+static int isValidExitType(u32 type){
+    if(type > 68)
+        return 0;
+    switch(type){
+        case 35:
+        case 38:
+        case 42:
+        case 65:
+            return 0;
+        default:
+            return 1;
+    }
+}
+// Assignmetn 3 Mod Start
 // CMPE283 CODE CHANGE END
 
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
@@ -1153,9 +1258,18 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
         total_cycles = (u64)atomic64_read(&cmpe283_total_cycles);
         ebx = (u32)((total_cycles & 0xFFFFFFFF00000000LL) >> 32);
         ecx = (u32)(total_cycles & 0xFFFFFFFFLL);
-        printk(KERN_INFO "CPUID(0x%lx), exits=%u, cycles spent in exit: %llu\n", kvm_rax_read(vcpu), eax, total_cycles);
-    } else
-    {
+        printk(KERN_INFO "CPUID(0x%lX), exits=%u, cycles spent in exit=%llu\n", kvm_rax_read(vcpu), eax, total_cycles);
+    } else if(eax == 0x4FFFFFFE){ // Assignmetn 3 Mod Start
+        // exit number is in ecx
+        if(!isValidExitType(ecx)){
+            eax = ebx = ecx = 0;
+            edx = 0xFFFFFFFF;
+        }else if(cmpe283_ass3_enabled_exits[ecx] ) {
+            eax = atomic_read(&(cmpe283_ass3_exit_counters[ecx]));
+        }else {
+            eax = ebx = ecx = edx = 0;
+        }
+    }else{ // Assignmetn 3 Mod END
         kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
     }
     // CMPE283 CODE CHANGE END

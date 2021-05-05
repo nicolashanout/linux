@@ -1,6 +1,27 @@
 # CMPE283 : Virtualization
-# Assignment 2: Modifying instruction behavior in KVM
+# Assignment 3: Instrumentation via hypercall
+**Heng Jerry Quan** <br>
+- Compiled list of enabled system exits
 
+
+**Nicolas Hanout** <br>
+- Compiled list of valid system exits
+
+**Both** <br>
+Implemented functionality and code, including
+- Create data structure to hold counts
+- Export data structure
+- Flow control to check valid and enabled exits
+- Increment appropriate counter on exit
+
+## Steps
+
+## Questions
+3. The rate of exits of different types is not the same between types. Some, like exit code 0 (General Protection Exception), occur very frequently, while some others, like exit code X, barely occur at all. We also don't expect the rate of exits to be uniform, as some exits are bound to happen more than others.
+4. In testing our new leaf function, we found that HLT had the most exits with 0x5D38A = 381834 exits, while the having the least number of exits is shared by many exit types all having 0 exits.
+____________________________________________________________________________________________
+
+# Assignment 2: Modifying instruction behavior in KVM
 ## Team members
 **Heng Jerry Quan** <br>
 - Researched and implemented exporting and loading global variables

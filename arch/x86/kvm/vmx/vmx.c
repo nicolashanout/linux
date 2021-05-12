@@ -6119,63 +6119,9 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
     if(to_vmx(vcpu)->exit_reason.basic != EXIT_REASON_BUS_LOCK){
         atomic_inc(&(cmpe283_ass3_exit_counters[to_vmx(vcpu)->exit_reason.basic]));
     }
-    printk(KERN_INFO "handeling exit \n");
 
 	ret = __vmx_handle_exit(vcpu, exit_fastpath);
 
-//         printk(KERN_INFO "exists: \n %u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n",
-//                 EXIT_REASON_EXCEPTION_NMI ,
-// 	 EXIT_REASON_EXTERNAL_INTERRUPT ,
-// 	 EXIT_REASON_TRIPLE_FAULT      ,
-// 	 EXIT_REASON_NMI_WINDOW 	  ,
-// 	 EXIT_REASON_IO_INSTRUCTION  ,
-// 	 EXIT_REASON_CR_ACCESS      ,
-// 	 EXIT_REASON_DR_ACCESS            ,
-// 	 EXIT_REASON_CPUID               ,
-// 	 EXIT_REASON_MSR_READ           ,
-// 	 EXIT_REASON_MSR_WRITE         ,
-// 	 EXIT_REASON_INTERRUPT_WINDOW ,
-// 	 EXIT_REASON_HLT             ,
-// 	 EXIT_REASON_INVD 		     ,
-// 	 EXIT_REASON_INVLPG 		,
-// 	 EXIT_REASON_RDPMC        ,
-// 	 EXIT_REASON_VMCALL      ,
-// 	 EXIT_REASON_VMCLEAR 	,
-// 	 EXIT_REASON_VMLAUNCH 	,
-// 	 EXIT_REASON_VMPTRLD 	,
-// 	 EXIT_REASON_VMPTRST 	,
-// 	 EXIT_REASON_VMREAD 	,
-// 	 EXIT_REASON_VMRESUME ,
-// 	 EXIT_REASON_VMWRITE ,
-// 	 EXIT_REASON_VMOFF 	,
-// 	 EXIT_REASON_VMON 	,
-// 	 EXIT_REASON_TPR_BELOW_THRESHOLD  ,
-// 	 EXIT_REASON_APIC_ACCESS         ,
-// 	 EXIT_REASON_APIC_WRITE              ,
-// 	 EXIT_REASON_EOI_INDUCED            ,
-// 	 EXIT_REASON_WBINVD                ,
-// 	 EXIT_REASON_XSETBV               ,
-// 	 EXIT_REASON_TASK_SWITCH         ,
-// 	 EXIT_REASON_MCE_DURING_VMENTRY ,
-// 	 EXIT_REASON_GDTR_IDTR ,
-// 	 EXIT_REASON_LDTR_TR ,
-// 	 EXIT_REASON_EPT_VIOLATION ,
-// 	 EXIT_REASON_EPT_MISCONFIG ,
-// 	 EXIT_REASON_PAUSE_INSTRUCTION ,
-// 	 EXIT_REASON_MWAIT_INSTRUCTION ,
-// 	 EXIT_REASON_MONITOR_TRAP_FLAG ,
-// 	 EXIT_REASON_MONITOR_INSTRUCTION ,
-// 	 EXIT_REASON_INVEPT ,
-// 	 EXIT_REASON_INVVPID ,
-// 	 EXIT_REASON_RDRAND ,
-// 	 EXIT_REASON_RDSEED ,
-// 	 EXIT_REASON_PML_FULL ,
-// 	 EXIT_REASON_INVPCID ,
-// 	 EXIT_REASON_VMFUNC ,
-// 	 EXIT_REASON_PREEMPTION_TIMER ,
-// 	 EXIT_REASON_ENCLS ,
-// 	 EXIT_REASON_BUS_LOCK );
-    //printk(KERN_INFO "exits_reason=%u, %u\n", to_vmx(vcpu)->exit_reason.full, to_vmx(vcpu)->exit_reason.basic);
 
 	/*
 	 * Even when current exit reason is handled by KVM internally, we

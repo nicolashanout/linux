@@ -1261,6 +1261,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
         printk(KERN_INFO "CPUID(0x%lX), exits=%u, cycles spent in exit=%llu\n", kvm_rax_read(vcpu), eax, total_cycles);
     } else if(eax == 0x4FFFFFFE){ // Assignmetn 3 Mod Start
         // exit number is in ecx
+        printk(KERN_INFO "IN ASS 3: exit:%x \n", ecx);
         if(!isValidExitType(ecx)){
             eax = ebx = ecx = 0;
             edx = 0xFFFFFFFF;
@@ -1269,6 +1270,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
         }else {
             eax = ebx = ecx = edx = 0;
         }
+        printk(KERN_INFO "IN ASS 3: eax=%x, ebx=%x, ecx=%x, edx=%x \n", eax, ebx, ecx, edx);
     }else{ // Assignmetn 3 Mod END
         kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
     }

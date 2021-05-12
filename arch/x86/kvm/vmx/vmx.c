@@ -6119,7 +6119,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
     if(to_vmx(vcpu)->exit_reason.basic != EXIT_REASON_BUS_LOCK){
         atomic_inc(&(cmpe283_ass3_exit_counters[to_vmx(vcpu)->exit_reason.basic]));
     }
-
+    printk(KERN_INFO "handeling exit \n");
 
 	ret = __vmx_handle_exit(vcpu, exit_fastpath);
 

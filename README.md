@@ -8,6 +8,16 @@
 Both members completed the assignment together and split the work evenly.
 
 ## Steps
+1. on the system we had after assigment 3
+2. start kvm virtual machine manager
+3. boot up our Ubuntu vm
+4. run script calling `cpuid` with leaf function `0x4FFFFFFE` and the exit number in ecx for all exits between 0-68, and print out the values of `eax`, `ebx`, `ecx` and `edx`.
+5. shutdown the Ubuntu vm and reboot the machine.
+6. from the terminal `sudo rmmod kvm_intel`
+7. then `sudo insmod /lib/modules/5.12.0-1-default+/kernel/arch/x86/kvm/kvm-intel.ko ept=0`
+8. redo step 4
+9. compare the results.
+
 
 ## Questions
 With ept:
@@ -175,6 +185,53 @@ Implemented functionality and code, including
 - Increment appropriate counter on exit
 
 ## Steps
+1. in the repo, modify code:
+  - in `arch/x86/kvm/cpuid.c` modify the `kvm_emulate_cpuid` function by creating a new leaf function for eax value `0x4FFFFFFE`,
+     ``` c 
+     if(eax == 0x4FFFFFFE)
+        {
+           // set eax, ebx and ecx to the
+        } else
+        {
+          // original behaviour
+        }
+      ```
+    and declare atomic 32-bit and 64-bit integers for the number of exits and cycles and export them.
+      ``` c
+      atomic_t cmpe283_exit_counter = ATOMIC_INIT(0);
+      atomic64_t cmpe283_total_cycles = ATOMIC64_INIT(0);
+      EXPORT_SYMBOL(cmpe283_exit_counter);
+      EXPORT_SYMBOL(cmpe283_total_cycles);
+      ```
+  - in `arch/x86/kvm/vmx/vmx.c` declare the previous external variable
+    ``` c
+    extern atomic_t cmpe283_exit_counter;
+    extern atomic64_t cmpe283_total_cycles;
+    ```
+    and increment them in `vmx_handle_exit` function.
+    ``` c
+      u64 start, end;
+      start = rdtsc();
+      atomic_inc(&cmpe283_exit_counter);
+      //
+      // Handle exit
+      //
+      end = rdtsc();
+      atomic64_fetch_add(end-start, &cmpe283_total_cycles);
+    ```
+  - in `arch/x86/kvm/cpuid.c` when the leaf function `0x4FFFFFFF` is called place the appropriate values into `eax`, `ebx`, and `ecx`.
+    ``` c
+          eax = (u32)atomic_read(&cmpe283_exit_counter);
+          total_cycles = (u64)atomic64_read(&cmpe283_total_cycles);
+          ebx = (u32)((total_cycles & 0xFFFFFFFF00000000LL) >> 32);
+          ecx = (u32)(total_cycles & 0xFFFFFFFFLL);
+    ```
+12. repeat step 9 and reboot again
+13. using `YaST`>`Virtualization`>`Install Hypervisor and Tools`,  instal kvm server and manager.
+14. create a vm and install a guest OS (we used Ubuntu 20.04.02 LTS)
+15. from inside the vm call execute a program that calls cpuid and the number of total exits will be stored in `eax` while the high-32 and low-32 bits of the total number of clock cycles spent handleing exits will be stored in `ebx` and `ecx` respectivly  
+sample output: `CPUID(0x4FFFFFFF), exits=583999, cycles spent in exit=13436425563`
+
 
 ## Questions
 3. The rate of exits of different types is not the same between vm operations. Some, like exit code 0 (General Protection Exception), occur very frequently, while some others, like exit code 18, barely occur at all. We also don't expect the rate of exits to be uniform, as some exits are bound to happen more than others based on the operations in the vm.

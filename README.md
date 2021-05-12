@@ -156,8 +156,8 @@ Without ept:
 68- 0, 0x0, 0x0, 0x0
 69- 0, 0x0, 0x0, 0xffffffff
 ```
-3. We see that with ept = 0, there are a lot more exception or NMI exits (exit 0) and control register access exits (exit 28) than before. This is unsurprising as we need to go back into the hypervisor every time we need to look up a page table.
-4. Two major things that changed were the number of exits and the speed. The VM ran much slower on ept = 0.
+3. We see that with ept = 0, there are a lot more exception or NMI exits (exit 0) and control register access exits (exit 28) than before. This is unsurprising as we need to go back into the hypervisor every time we need to look up a page table because kvm is using shadow paging when ept is disabled.
+4. Two major things that changed were the number of exits of certain types and the speed. The VM ran much slower on ept = 0.
 __________________________________________________________________________________________________________________________
 # Assignment 3: Instrumentation via hypercall
 **Heng Jerry Quan** <br>
@@ -177,7 +177,7 @@ Implemented functionality and code, including
 ## Steps
 
 ## Questions
-3. The rate of exits of different types is not the same between types. Some, like exit code 0 (General Protection Exception), occur very frequently, while some others, like exit code X, barely occur at all. We also don't expect the rate of exits to be uniform, as some exits are bound to happen more than others.
+3. The rate of exits of different types is not the same between vm operations. Some, like exit code 0 (General Protection Exception), occur very frequently, while some others, like exit code 18, barely occur at all. We also don't expect the rate of exits to be uniform, as some exits are bound to happen more than others based on the operations in the vm.
 Sample output (exits after Boot):
 ```
 0- 8407, ffff97e0, 0, ffffffff
@@ -402,13 +402,13 @@ after idling for a while
 4. In testing our new leaf function, we found that many exit types will end up having 0 exits, which makes them all tied for least amount of exits. In terms of having the most exits, we found that it depends on what is being done. Compare the following exits:
 ```
 #- boot -> after use -> after idling
-1-  25481 -> 240800 -> 282440
+1- 25481 -> 240800 -> 282440
 10- 132076 -> 134982 -> 135791
 12- 27229 -> 141722 -> 292668
 30- 132365 -> 140960 -> 143551
 32- 21545 -> 202901 -> 285357
 ```
-We see that some start high, but don't increase too much. On the other hand, some start low and increase a lot. Overall, the HLT exit probably will have the most exits in the long run.
+We see that some start high, but don't increase too much. On the other hand, some start low and increase a lot. Overall, the HLT exit (12) probably will have the most exits in the long run but it depends on the workload put on the vm.
 ____________________________________________________________________________________________
 
 # Assignment 2: Modifying instruction behavior in KVM

@@ -156,7 +156,7 @@ Without ept:
 68- 0, 0x0, 0x0, 0x0
 69- 0, 0x0, 0x0, 0xffffffff
 ```
-3. We see that with ept = 0, there are a lot more NMI exits (exit 0) and exit 28 than before. This is unsurprising as we need to go back into the hypervisor every time we need to look up a page table.
+3. We see that with ept = 0, there are a lot more exception or NMI exits (exit 0) and control register access exits (exit 28) than before. This is unsurprising as we need to go back into the hypervisor every time we need to look up a page table.
 4. Two major things that changed were the number of exits and the speed. The VM ran much slower on ept = 0.
 __________________________________________________________________________________________________________________________
 # Assignment 3: Instrumentation via hypercall

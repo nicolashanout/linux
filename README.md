@@ -188,49 +188,55 @@ Implemented functionality and code, including
 1. in the repo, modify code:
   - in `arch/x86/kvm/cpuid.c` modify the `kvm_emulate_cpuid` function by creating a new leaf function for eax value `0x4FFFFFFE`,
      ``` c 
-     if(eax == 0x4FFFFFFE)
-        {
-           // set eax, ebx and ecx to the
-        } else
-        {
-          // original behaviour
-        }
-      ```
-    and declare atomic 32-bit and 64-bit integers for the number of exits and cycles and export them.
+     if(eax == 0x4FFFFFFE){ 
+      //handle leaf function
+     }
+     ```
+    and declare an array of atomic 32-bit integers for the exit counters and a boolean array mapping kvm enabled exits and export the counters.
       ``` c
-      atomic_t cmpe283_exit_counter = ATOMIC_INIT(0);
-      atomic64_t cmpe283_total_cycles = ATOMIC64_INIT(0);
-      EXPORT_SYMBOL(cmpe283_exit_counter);
-      EXPORT_SYMBOL(cmpe283_total_cycles);
+        bool cmpe283_ass3_enabled_exits[69] = {
+            1,1,1,0,0,0,0,1,1,1,
+            1,0,1,1,1,1,0,0,1,1,
+            1,1,1,1,1,1,1,1,1,1,
+            1,1,1,0,0,0,1,1,0,1,
+            1,1,0,1,1,1,1,1,1,1,
+            1,0,1,1,1,1,1,1,1,1,
+            1,1,1,0,0,0,0,0,0
+        };
+
+        atomic_t cmpe283_ass3_exit_counters[69] = {
+           //Init all indecies to ATOMIC_INIT(0)
+        };
+        EXPORT_SYMBOL(cmpe283_ass3_exit_counters);
       ```
-  - in `arch/x86/kvm/vmx/vmx.c` declare the previous external variable
+  - in `arch/x86/kvm/vmx/vmx.c` declare extern the exit counters from cpuid.c
     ``` c
-    extern atomic_t cmpe283_exit_counter;
-    extern atomic64_t cmpe283_total_cycles;
+      extern atomic_t cmpe283_ass3_exit_counters[69];
     ```
-    and increment them in `vmx_handle_exit` function.
+    and check the basic exit reason stored in the vcpu and increment the corresponding exit counter (excluding `EXIT_REASON_BUS_LOCK` which is not available on current CPUs at this time) in `vmx_handle_exit` function.
     ``` c
-      u64 start, end;
-      start = rdtsc();
-      atomic_inc(&cmpe283_exit_counter);
-      //
-      // Handle exit
-      //
-      end = rdtsc();
-      atomic64_fetch_add(end-start, &cmpe283_total_cycles);
+        if(to_vmx(vcpu)->exit_reason.basic != EXIT_REASON_BUS_LOCK){
+          atomic_inc(&(cmpe283_ass3_exit_counters[to_vmx(vcpu)->exit_reason.basic]));
+        }
     ```
-  - in `arch/x86/kvm/cpuid.c` when the leaf function `0x4FFFFFFF` is called place the appropriate values into `eax`, `ebx`, and `ecx`.
+  - in `arch/x86/kvm/cpuid.c` when the leaf function `0x4FFFFFFE` we check the requested exit type and place values into nto `eax`, `ebx`, `ecx` and `edx`.
     ``` c
-          eax = (u32)atomic_read(&cmpe283_exit_counter);
-          total_cycles = (u64)atomic64_read(&cmpe283_total_cycles);
-          ebx = (u32)((total_cycles & 0xFFFFFFFF00000000LL) >> 32);
-          ecx = (u32)(total_cycles & 0xFFFFFFFFLL);
+      if(eax == 0x4FFFFFFE){
+          if(!isValidExitType(ecx)){
+              eax = ebx = ecx = 0;
+              edx = 0xFFFFFFFF;
+          }else if(cmpe283_ass3_enabled_exits[ecx] ) {
+              eax = atomic_read(&(cmpe283_ass3_exit_counters[ecx]));
+          }else {
+              eax = ebx = ecx = edx = 0;
+          }
+      }
     ```
-12. repeat step 9 and reboot again
-13. using `YaST`>`Virtualization`>`Install Hypervisor and Tools`,  instal kvm server and manager.
-14. create a vm and install a guest OS (we used Ubuntu 20.04.02 LTS)
-15. from inside the vm call execute a program that calls cpuid and the number of total exits will be stored in `eax` while the high-32 and low-32 bits of the total number of clock cycles spent handleing exits will be stored in `ebx` and `ecx` respectivly  
-sample output: `CPUID(0x4FFFFFFF), exits=583999, cycles spent in exit=13436425563`
+2. rebuild the kernel, as in step 9 assignment 2.
+3. reboot into the new kernel.
+4. start the vm set up in assignment 2
+5. from the vm call `cpuid` with the value `0x4FFFFFFE` loaded into `eax`, and the exit number loaded into `ecx`.
+6. read the values that are placed into `eax`, `ebx`, `ecx` and `edx`.
 
 
 ## Questions
